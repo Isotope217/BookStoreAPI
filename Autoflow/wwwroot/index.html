@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Autoflow's Book Store</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #999;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #searchInput {
+            margin-bottom: 10px;
+            padding: 8px;
+            width: 300px;
+            font-size: 16px;
+        }
+        #addBookForm {
+            margin-top: 20px;
+        }
+        #addBookForm input {
+            margin-right: 8px;
+            padding: 6px;
+            font-size: 14px;
+        }
+        #addBookForm button {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+        #message {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Autoflow's Book Store</h1>
+
+<input type="text" id="searchInput" placeholder="Search books..." />
+
+<table id="booksTable">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Author</th>
+        <th>Rating</th>
+        <th>Price</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<h2>Add a New Book</h2>
+<form id="addBookForm">
+    <input type="number" id="bookId" placeholder="Id" required />
+    <input type="text" id="bookName" placeholder="Name" required />
+    <input type="text" id="bookAuthor" placeholder="Author" required />
+    <input type="text" id="bookRating" placeholder="Rating" required />
+    <input type="number" step="0.01" id="bookPrice" placeholder="Price" required />
+    <button type="submit">Add Book</button>
+</form>
+<div id="message"></div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        fetchBooks('');
+    });
+    
+    document.getElementById('searchInput').addEventListener('input', () => {
+        const searchTerm = document.getElementById('searchInput').value;
+        fetchBooks(searchTerm);
+    });
+    
+    document.getElementById('addBookForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const id = parseInt(document.getElementById('bookId').value);
+        const name = document.getElementById('bookName').value;
+        const author = document.getElementById('bookAuthor').value;
+        const rating = document.getElementById('bookRating').value;
+        const price = parseFloat(document.getElementById('bookPrice').value);
+
+        const newBook = {
+            id: id,
+            name: name,
+            author: author,
+            rating: rating,
+            price: price
+        };
+
+        fetch('https://localhost:44338/api/Book', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newBook)
+        })
+        .then(response => {
+            if (response.ok) {
+                document.getElementById('message').textContent = 'Book added successfully!';
+                fetchBooks('');
+                document.getElementById('addBookForm').reset();
+            } else {
+                throw new Error('Failed to add book');
+            }
+        })
+        .catch(error => {
+            document.getElementById('message').textContent = 'Error: ' + error.message;
+            console.error('Error:', error);
+        });
+    });
+
+    function fetchBooks(searchTerm) {
+        const url = "https://localhost:44338/api/Book?search=" + encodeURIComponent(searchTerm);
+        console.log('Fetching:', url);
+        
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                displayBooks(data);
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            });
+    }
+
+    function displayBooks(books) {
+        const tbody = document.querySelector('#booksTable tbody');
+        tbody.innerHTML = '';
+
+        books.forEach(book => {
+            const row = document.createElement('tr');
+
+            const idCell = document.createElement('td');
+            idCell.textContent = book.id;
+            row.appendChild(idCell);
+
+            const nameCell = document.createElement('td');
+            nameCell.textContent = book.name;
+            row.appendChild(nameCell);
+
+            const authorCell = document.createElement('td');
+            authorCell.textContent = book.author;
+            row.appendChild(authorCell);
+
+            const ratingCell = document.createElement('td');
+            ratingCell.textContent = book.rating;
+            row.appendChild(ratingCell);
+
+            const priceCell = document.createElement('td');
+            priceCell.textContent = book.price;
+            row.appendChild(priceCell);
+
+            tbody.appendChild(row);
+        });
+    }
+</script>
+
+</body>
+</html>
