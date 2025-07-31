@@ -1,5 +1,6 @@
 using Autoflow;
 using Autoflow.Entities;
+using Autoflow.Services;
 using Microsoft.EntityFrameworkCore;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -11,7 +12,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:4200");
+                          policy.WithOrigins("http://localhost:4200")
+                                .AllowAnyMethod()
+                                .AllowAnyHeader();
                       });
 });
 
@@ -21,6 +24,7 @@ builder.Services.AddDbContext<AutoflowDbContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+builder.Services.AddTransient<IBookService, BookService>();
 
 var app = builder.Build();
 
