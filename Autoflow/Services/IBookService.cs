@@ -1,10 +1,9 @@
-﻿using Autoflow.Entities;
+﻿using Autoflow.Dtos;
 
-namespace Autoflow.Services
+namespace Autoflow.Services;
+
+public interface IBookService
 {
-    public interface IBookService
-    {
-        Task<List<Book>> GetBooksBySearch(string search, int? rating);
-        Task<Book> AddBook(Book book);
-    }
+    Task<IEnumerable<BookDto>> GetBooks(string search, int? rating);
+    Task<BookDto> CreateBook(BookDto book);
 }

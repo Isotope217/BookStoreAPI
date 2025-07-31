@@ -1,50 +1,52 @@
-﻿using Autoflow.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Autoflow.Dtos;
+using Autoflow.Entities;
+using Autoflow.Repositories;
 
-namespace Autoflow.Services
+namespace Autoflow.Services;
+
+public class BookService : IBookService
 {
-    public class BookService : IBookService
+    private readonly IBookRepository _bookRepository;
+
+    public BookService(IBookRepository bookRepository)
     {
-        private readonly AutoflowDbContext _context;
+        _bookRepository = bookRepository;
+    }
 
-        public BookService(AutoflowDbContext context)
+    public async Task<IEnumerable<BookDto>> GetBooks(string search, int? rating)
+    {
+        var books = await _bookRepository.GetBooks(search, rating);
+
+        var bookDtos = books.Select(book => new BookDto
+        (
+            book.Id,
+            book.Name,
+            book.Author,
+            book.Rating,
+            book.Price
+        ));
+
+        return bookDtos;
+    }
+
+    public async Task<BookDto> CreateBook(BookDto book)
+    {
+        var Newbook = new Book
         {
-            _context = context;
-        }
+            Name = book.Name,
+            Author = book.Author,
+            Rating = book.Rating,
+            Price = book.Price
+        };
 
-        public async Task<List<Book>> GetBooksBySearch(string search, int? rating)
-        {
-            var query = _context.Books.AsQueryable();
+        var createdBook = await _bookRepository.Add(Newbook);
 
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                query = query.Where(b =>
-                    EF.Functions.Like(b.Name, $"%{search}%") ||
-                    EF.Functions.Like(b.Author, $"%{search}%"));
-            }
-
-            if (rating.HasValue)
-            {
-                query = query.Where(b => b.Rating == rating.Value);
-            }
-
-            return await query.ToListAsync();
-        }
-
-        public async Task<Book> AddBook(Book book)
-        {
-            var newBook = new Book
-            {
-                Name = book.Name,
-                Author = book.Author,
-                Rating = book.Rating,
-                Price = book.Price
-            };
-
-            _context.Books.Add(newBook);
-            await _context.SaveChangesAsync();
-
-            return newBook;
-        }
+        return new BookDto(
+            createdBook.Id,
+            createdBook.Name,
+            createdBook.Author,
+            createdBook.Rating,
+            createdBook.Price
+        );
     }
 }

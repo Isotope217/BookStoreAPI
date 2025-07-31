@@ -11,5 +11,5 @@ public class Book
     public string Name { get; set; }
     public string Author { get; set; }
     public int Rating { get; set; }
-    public float Price { get; init; }
+    public decimal Price { get; init; }
 }
