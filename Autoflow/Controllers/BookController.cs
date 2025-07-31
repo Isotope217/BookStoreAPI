@@ -31,7 +31,7 @@ public class BookController : ControllerBase
         }
         catch (Exception ex)
         {
-            AuditLog.AddToLog("Something has gone terribly wrong: " + ex.Message);
+            AuditLog.AddToLog("unable to get books: " + ex.Message);
             return StatusCode(500, "Get books request has failed");
         }
     }
@@ -55,8 +55,8 @@ public class BookController : ControllerBase
         }
         catch (Exception ex)
         {
-            AuditLog.AddToLog("Something has gone terribly wrong: " + ex.Message);
-            return StatusCode(500, "Something has gone terribly wrong :(");
+            AuditLog.AddToLog("unable to create book: " + ex.Message);
+            return StatusCode(500, "unable to create book");
         }
     }
 }
