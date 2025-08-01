@@ -1,6 +1,5 @@
 ﻿using Autoflow.Controllers;
 using Autoflow.Dtos;
-using Autoflow.Entities;
 using Autoflow.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -103,6 +102,6 @@ public class BookControllerTest
         // Assert
         var objectResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(500, objectResult.StatusCode);
-        Assert.Equal("Something has gone terribly wrong :(", objectResult.Value);
+        Assert.Equal("unable to create book", objectResult.Value);
     }
 }

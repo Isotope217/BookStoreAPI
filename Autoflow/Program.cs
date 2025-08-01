@@ -72,3 +72,5 @@ void SeedData(AutoflowDbContext context)
         context.SaveChanges();
     }
 }
+
+public partial class Program { }
