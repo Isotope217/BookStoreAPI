@@ -36,7 +36,7 @@ public class BookControllerTest
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var returnValue = Assert.IsType<List<Book>>(okResult.Value);
+        var returnValue = Assert.IsType<List<BookDto>>(okResult.Value);
         Assert.Single(returnValue);
     }
 
@@ -72,7 +72,7 @@ public class BookControllerTest
 
         // Assert
         var createdAt = Assert.IsType<CreatedAtActionResult>(result);
-        var returnValue = Assert.IsType<Book>(createdAt.Value);
+        var returnValue = Assert.IsType<BookDto>(createdAt.Value);
         Assert.Equal("New Book", returnValue.Name);
     }
 
